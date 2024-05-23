@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Carrito de Compras</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+        <!-- Navbar content -->
+    </nav>
+    <main>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Productos en el Carrito</h3>
+                    <button id="btnEliminarSumar" class="btn btn-danger mt-3 mb-3" onclick="clearCart()">Eliminar y Sumar</button>
+                    <div id="cart-items" class="mt-0">
+                        <!-- Aquí se mostrarán los productos en el carrito -->
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3>Pago</h3>
+                    <div id="payment-form">
+                        <div id="payment-status-container"></div>
+                        <div id="card-container"></div>
+                        <button id="card-button" class="btn btn-success mt-3 mb-3">Pagar</button>
+                    </div>
+                    <select id="metodoPago" class="form-select mt-3 w-50">
+                        <option value="visa">Visa</option>
+                        <option value="mastercard">MasterCard</option>
+                        <option value="american">American Express</option>
+                        <!-- Agrega más opciones según sea necesario -->
+                    </select>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!--footer-->
+    <br>
+    <br>
+    <br>
+
+
+    <br>
+    <br>
+    <br>
+    <footer class="bg-dark text-light text-center  py-4">
+        <!-- Footer content -->
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/carrito2.js"></script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', async () => {
+            const payments = Square.payments('sq0idp-KUgFA87e7FwzWKz-DXEDjQ', 'EAAAlg0_mSzCvVU9glRifPC5EpcPkn9VxSbRbVytD7K-jMDdvxXWF1W7a4kEtzSx');
+            const card = await payments.card();
+            await card.attach('#card-container');
+
+            const cardButton = document.getElementById('card-button');
+            cardButton.addEventListener('click', async () => {
+                const statusContainer = document.getElementById('payment-status-container');
+
+                try {
+                    const result = await card.tokenize();
+                    if (result.status === 'OK') {
+                        console.log(`Payment token is ${result.token}`);
+                        statusContainer.innerHTML = "Pago Exitoso";
+                    } else {
+                        let errorMessage = `Tokenization failed with status: ${result.status}`;
+                        if (result.errors) {
+                            errorMessage += ` and errors: ${JSON.stringify(result.errors)}`;
+                        }
+
+                        throw new Error(errorMessage);
+                    }
+                } catch (e) {
+                    console.error(e);
+                    statusContainer.innerHTML = "Pago Fallido";
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
